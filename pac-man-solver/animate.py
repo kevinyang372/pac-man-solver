@@ -4,7 +4,7 @@ from astar import Astar
 
 _, record = Astar().astar_solve()
 
-fig = plt.figure(figsize = (10, 10))
+fig = plt.figure(figsize = (10, 6))
 ax = plt.axes()
 img = ax.imshow(record[0])
 
