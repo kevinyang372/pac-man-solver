@@ -53,24 +53,28 @@ class Astar(object):
             while not path:
                 print("No path found. Waiting...")
                 self.maps.updateGhost()
+                res.append(copy.deepcopy(self.maps.maps))
                 path = self.astar(self.maps.maps, self.maps.player, queue[0])
 
             path.reverse()
+            path.pop()
             
             while path:
                 
                 self.maps.updateGhost()
                 next = path.pop()
-                
+
                 if self.maps.nearGhost(next[0], next[1]):
                     path = self.astar(self.maps.maps, self.maps.player, queue[0])
 
                     if not path:
                         print("No path found. Waiting...")
+                        res.append(copy.deepcopy(self.maps.maps))
                         c += 1
                         continue
 
                     path.reverse()
+                    path.pop()
                     next = path.pop()
                    
                 self.maps.move(next[0], next[1])

@@ -1,5 +1,6 @@
 import random
 from functools import reduce
+import matplotlib.pyplot as plt
 
 
 class Maps(object):
