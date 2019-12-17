@@ -37,7 +37,7 @@ class QLearning(object):
                 else:
                     action = np.argmax(self.q_table[flatten_state])
                 
-                reward, done = state.getReward(action_space[action])
+                reward, done = state.getReward(self.action_space[action])
                 next_flatten = state.returnPartialFlatten(self.d)
                 
                 old_value = self.q_table[flatten_state][action]
