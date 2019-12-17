@@ -9,7 +9,7 @@ class Astar(object):
 
     def __init__(self):
         self.maps = Maps()
-        self.teasures = self.maps.teasures
+        self.treasures = self.maps.treasures
 
 
     def astar(self, maps, start, end):
@@ -42,7 +42,7 @@ class Astar(object):
 
     def astar_solve(self):
 
-        queue = collections.deque(self.teasures)
+        queue = collections.deque(self.treasures)
         res = []
         c = 0
         

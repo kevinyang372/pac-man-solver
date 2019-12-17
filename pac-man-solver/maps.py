@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class Maps(object):
 
-    def __init__(self, filename="default_map.txt", player=[0, 0], numGhosts = 10, numTeasures = 5):
+    def __init__(self, filename="default_map.txt", player=[0, 0], numGhosts = 10, numtreasures = 5):
         self.maps = []
 
         with open(filename, "r") as file:
@@ -15,12 +15,12 @@ class Maps(object):
         self.player = player
         self.ghosts = set(random.sample([(x, y) for x in range(len(self.maps)) for y in range(
             len(self.maps[0])) if self.maps[x][y] != 1], numGhosts))
-        self.teasures = random.sample([(x, y) for x in range(len(self.maps)) for y in range(len(self.maps[0])) if self.maps[x][y] != 1 and (x, y) not in self.ghosts and (x, y) != self.player], numTeasures)
+        self.treasures = random.sample([(x, y) for x in range(len(self.maps)) for y in range(len(self.maps[0])) if self.maps[x][y] != 1 and (x, y) not in self.ghosts and (x, y) != self.player], numtreasures)
 
         for x, y in self.ghosts:
             self.maps[x][y] = 3
         
-        for x, y in self.teasures:
+        for x, y in self.treasures:
             self.maps[x][y] = 4
         
         self.maps[self.player[0]][self.player[1]] = 2
@@ -80,6 +80,28 @@ class Maps(object):
     def move(self, x, y):
         self.maps[x][y], self.maps[self.player[0]][self.player[1]] = 2, 0
         self.player = [x, y]
+
+
+    def getReward(self, action):
+
+        self.updateGhost()
+
+        x, y = self.player
+        dx, dy = action
+
+        if x + dx < 0 or x + dx >= len(self.maps) or y + dy < 0 or y + dy >= len(self.maps[0]) or self.maps[x + dx][y + dy] == 1:
+            return -10, False
+        elif self.nearGhost(x + dx, y + dy):
+            return -100, True
+        elif (x + dx, y + dy) in self.treasures:
+            self.treasures.remove((x + dx, y + dy))
+            done = True if not self.treasures else False
+            self.maps[x + dx][y + dy] = 0
+            self.maps[x][y], self.maps[x + dx][y + dy] = self.maps[x + dx][y + dy], self.maps[x][y]
+            return 100, done
+        else:
+            self.maps[x][y], self.maps[x + dx][y + dy] = self.maps[x + dx][y + dy], self.maps[x][y]
+            return -1, False
 
 
     def draw(self):
