@@ -2,14 +2,14 @@ import random
 from functools import reduce
 
 
-class maps(object):
-    def __init__(self, filename="default_map.txt", player=[0, 0], numGhosts = 10, numTeasures = 5):
+class Maps(object):
 
+    def __init__(self, filename="default_map.txt", player=[0, 0], numGhosts = 10, numTeasures = 5):
         self.maps = []
 
         with open(filename, "r") as file:
             for line in file:
-                self.maps.append(line.replace('\n', '').split(','))
+                self.maps.append(list(map(int, line.replace('\n', '').split(','))))
 
         self.player = player
         self.ghosts = set(random.sample([(x, y) for x in range(len(self.maps)) for y in range(
@@ -19,7 +19,7 @@ class maps(object):
         for x, y in self.ghosts:
             self.maps[x][y] = 3
         
-        for x, y in teasures:
+        for x, y in self.teasures:
             self.maps[x][y] = 4
         
         self.maps[self.player[0]][self.player[1]] = 2
@@ -38,7 +38,7 @@ class maps(object):
             random.shuffle(directions)
 
             for di, dj in directions:
-                if 0 <= i + di < len(maps) and 0 <= j + dj < len(self.maps[0]) and self.maps[i + di][j + dj] == 0:
+                if 0 <= i + di < len(self.maps) and 0 <= j + dj < len(self.maps[0]) and self.maps[i + di][j + dj] == 0:
                     self.maps[i][j], self.maps[i + di][j + dj] = self.maps[i + di][j + dj], self.maps[i][j]
                     visited.add((i + di, j + dj))
                     break
@@ -77,6 +77,7 @@ class maps(object):
 
 
     def move(self, x, y):
+        self.maps[x][y], self.maps[self.player[0]][self.player[1]] = 2, 0
         self.player = [x, y]
 
 
