@@ -97,10 +97,10 @@ class Maps(object):
             self.treasures.remove((x + dx, y + dy))
             done = True if not self.treasures else False
             self.maps[x + dx][y + dy] = 0
-            self.maps[x][y], self.maps[x + dx][y + dy] = self.maps[x + dx][y + dy], self.maps[x][y]
+            self.move(x + dx, y + dy)
             return 100, done
         else:
-            self.maps[x][y], self.maps[x + dx][y + dy] = self.maps[x + dx][y + dy], self.maps[x][y]
+            self.move(x + dx, y + dy)
             return -1, False
 
 
