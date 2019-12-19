@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class Maps(object):
 
-    def __init__(self, filename="default_map.txt", player=[0, 0], numGhosts = 10, numtreasures = 4):
+    def __init__(self, filename="default_map.txt", player=[0, 0], ghostsPosition = set(), treasuresPosition = [], numGhosts = 10, numTreasures = 4):
         self.maps = []
 
         with open(filename, "r") as file:
@@ -13,9 +13,17 @@ class Maps(object):
                 self.maps.append(list(map(int, line.replace('\n', '').split(','))))
 
         self.player = player
-        self.ghosts = set(random.sample([(x, y) for x in range(len(self.maps)) for y in range(
-            len(self.maps[0])) if self.maps[x][y] != 1], numGhosts))
-        self.treasures = random.sample([(x, y) for x in range(len(self.maps)) for y in range(len(self.maps[0])) if self.maps[x][y] != 1 and (x, y) not in self.ghosts and (x, y) != self.player], numtreasures)
+
+        if ghostsPosition:
+            self.ghosts = ghostsPosition
+        else:
+            self.ghosts = set(random.sample([(x, y) for x in range(len(self.maps)) for y in range(
+                len(self.maps[0])) if self.maps[x][y] != 1], numGhosts))
+
+        if treasuresPosition:
+            self.treasures = treasuresPosition
+        else:
+            self.treasures = random.sample([(x, y) for x in range(len(self.maps)) for y in range(len(self.maps[0])) if self.maps[x][y] != 1 and (x, y) not in self.ghosts and (x, y) != self.player], numTreasures)
 
         for x, y in self.ghosts:
             self.maps[x][y] = 3
@@ -98,7 +106,7 @@ class Maps(object):
             done = True if not self.treasures else False
             self.maps[x + dx][y + dy] = 0
             self.move(x + dx, y + dy)
-            return 100, done
+            return 10000, done
         else:
             self.move(x + dx, y + dy)
             return -1, False

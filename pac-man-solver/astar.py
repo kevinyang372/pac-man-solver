@@ -7,8 +7,13 @@ from maps import Maps
 
 class Astar(object):
 
-    def __init__(self):
-        self.maps = Maps()
+    def __init__(self, maps = "small_map.txt", ghostsPosition = set([(5, 3)]), treasuresPosition = [(1, 7), (6, 0)]):
+
+        if maps == "small_map.txt":
+            self.maps = Maps(maps = maps, ghostsPosition, treasuresPosition)
+        else:
+            self.maps = Maps()
+            
         self.treasures = self.maps.treasures
 
 
@@ -50,11 +55,7 @@ class Astar(object):
 
             path = self.astar(self.maps.maps, self.maps.player, queue[0])
 
-            while not path:
-                print("No path found. Waiting...")
-                self.maps.updateGhost()
-                res.append(copy.deepcopy(self.maps.maps))
-                path = self.astar(self.maps.maps, self.maps.player, queue[0])
+            if not path: return -1, None
 
             path.reverse()
             path.pop()
@@ -67,11 +68,7 @@ class Astar(object):
                 if self.maps.nearGhost(next[0], next[1]):
                     path = self.astar(self.maps.maps, self.maps.player, queue[0])
 
-                    if not path:
-                        print("No path found. Waiting...")
-                        res.append(copy.deepcopy(self.maps.maps))
-                        c += 1
-                        continue
+                    if not path: return -1, None
 
                     path.reverse()
                     path.pop()

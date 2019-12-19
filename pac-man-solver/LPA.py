@@ -6,11 +6,16 @@ from maps import Maps
 
 class LPA(object):
 
-    def __init__(self):
-        self.maps = Maps()
-        self.treasures = collections.deque(self.maps.treasures)
+    def __init__(self, maps = "small_map.txt", ghostsPosition = set([(5, 3)]), treasuresPosition = [(1, 7), (6, 0)]):
 
+        if maps == "small_map.txt":
+            self.maps = Maps(maps = maps, ghostsPosition, treasuresPosition)
+        else:
+            self.maps = Maps()
+
+        self.treasures = collections.deque(self.maps.treasures)
         self.heuristic = lambda a, b: abs(a[0] - b[0]) + abs(a[1] - b[1])
+
 
     def initialize(self, start, goal):
 
@@ -25,9 +30,11 @@ class LPA(object):
         self.queue.append((self.calculate_key(self.start), self.start))
         self.memory = copy.deepcopy(self.maps.maps)
 
+
     def calculate_key(self, node):
         c = min(self.g.get(node, float('inf')), self.rhs.get(node, float('inf')))
         return (c + self.heuristic(node, self.goal), c)
+
 
     def computeShortestPath(self):
         while (self.queue and self.queue[0][0] < self.calculate_key(self.goal)) or (self.rhs.get(self.goal, float('inf')) != self.g.get(self.goal, float('inf'))):
@@ -55,11 +62,14 @@ class LPA(object):
                 path.append(temp)
             return path
 
+
     def getNeighbors(self, node):
         return [(node[0] + dx, node[1] + dy) for dx, dy in [[0, 1], [1, 0], [0, -1], [-1, 0]] if 0 <= node[0] + dx < len(self.maps.maps) and 0 <= node[1] + dy < len(self.maps.maps[0])]
 
+
     def cost(self, n1, n2):
         return float('inf') if self.maps.maps[n1[0]][n1[1]] in [1, 3] or self.maps.maps[n2[0]][n2[1]] in [1, 3] else 1
+
 
     def updateNode(self, node):
         if node != self.start:
@@ -76,6 +86,7 @@ class LPA(object):
         if self.g.get(node, float('inf')) != self.rhs.get(node, float('inf')):
             heapq.heappush(self.queue, (self.calculate_key(node), node))
 
+
     def scan(self):
         l = []
         for i in range(len(self.maps.maps)):
@@ -85,20 +96,18 @@ class LPA(object):
                 self.memory[i][j] = self.maps.maps[i][j]
         return l
     
+
     def LPA(self):
         
         record = []
+        c = 0
+
         while self.treasures:
             self.initialize(tuple(self.maps.player), self.treasures.pop())
             while True:
                 p = self.computeShortestPath()
                 
-                if not p:
-                    self.maps.updateGhost()
-                    changed = self.scan()
-                    for node in changed:
-                        self.updateNode(node)
-                    continue
+                if not p: return -1, None
                 
                 while self.start != self.goal:
                     next = p.pop()
@@ -106,6 +115,7 @@ class LPA(object):
                     if self.maps.maps[next[0]][next[1]] in [1, 3]:
                         break
                     
+                    c += 1
                     self.maps.updateGhost()
                     self.maps.move(next[0], next[1])
                     self.start = (next[0], next[1])
@@ -118,4 +128,4 @@ class LPA(object):
                     for node in changed:
                         self.updateNode(node)
                     
-        return record
+        return c, record
