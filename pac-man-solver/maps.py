@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class Maps(object):
 
-    def __init__(self, filename="default_map.txt", player=[0, 0], numGhosts = 10, numtreasures = 5):
+    def __init__(self, filename="default_map.txt", player=[0, 0], numGhosts = 10, numtreasures = 4):
         self.maps = []
 
         with open(filename, "r") as file:
