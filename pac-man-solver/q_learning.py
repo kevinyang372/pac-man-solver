@@ -8,7 +8,7 @@ from maps import Maps
 
 class QLearning(object):
 
-    def __init__(self, dimension = 5, iterations = 10000):
+    def __init__(self, dimension = 4, iterations = 10000):
         self.maps = Maps()
         self.q_table = collections.defaultdict(lambda: [0, 0, 0, 0])
         self.iterations = iterations
