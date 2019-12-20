@@ -6,10 +6,10 @@ from maps import Maps
 
 class LPA(object):
 
-    def __init__(self, maps = "small_map.txt", ghostsPosition = set([(5, 3)]), treasuresPosition = [(1, 7), (6, 0)]):
+    def __init__(self, maps = "small_map.txt", ghostsPosition = None, treasuresPosition = None):
 
         if maps == "small_map.txt":
-            self.maps = Maps(maps = maps, ghostsPosition, treasuresPosition)
+            self.maps = Maps(filename = maps, ghostsPosition = ghostsPosition, treasuresPosition = treasuresPosition)
         else:
             self.maps = Maps()
 
@@ -60,6 +60,7 @@ class LPA(object):
             while temp != self.start:
                 temp = min(self.getNeighbors(temp), key = lambda x: self.cost(x, temp) + self.g.get(x, float('inf')))
                 path.append(temp)
+            path.pop()
             return path
 
 
@@ -100,7 +101,7 @@ class LPA(object):
     def LPA(self):
         
         record = []
-        c = 0
+        moves = []
 
         while self.treasures:
             self.initialize(tuple(self.maps.player), self.treasures.pop())
@@ -115,7 +116,7 @@ class LPA(object):
                     if self.maps.maps[next[0]][next[1]] in [1, 3]:
                         break
                     
-                    c += 1
+                    moves.append(next)
                     self.maps.updateGhost()
                     self.maps.move(next[0], next[1])
                     self.start = (next[0], next[1])
@@ -128,4 +129,4 @@ class LPA(object):
                     for node in changed:
                         self.updateNode(node)
                     
-        return c, record
+        return moves, record

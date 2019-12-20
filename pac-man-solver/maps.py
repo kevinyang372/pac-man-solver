@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 class Maps(object):
 
-    def __init__(self, filename="default_map.txt", player=[0, 0], ghostsPosition = set(), treasuresPosition = [], numGhosts = 10, numTreasures = 4):
+    def __init__(self, filename="default_map.txt", player=[0, 0], ghostsPosition = None, treasuresPosition = None, numGhosts = 10, numTreasures = 4):
         self.maps = []
 
         with open(filename, "r") as file:
@@ -14,13 +14,13 @@ class Maps(object):
 
         self.player = player
 
-        if ghostsPosition:
+        if ghostsPosition is not None:
             self.ghosts = ghostsPosition
         else:
             self.ghosts = set(random.sample([(x, y) for x in range(len(self.maps)) for y in range(
                 len(self.maps[0])) if self.maps[x][y] != 1], numGhosts))
 
-        if treasuresPosition:
+        if treasuresPosition is not None:
             self.treasures = treasuresPosition
         else:
             self.treasures = random.sample([(x, y) for x in range(len(self.maps)) for y in range(len(self.maps[0])) if self.maps[x][y] != 1 and (x, y) not in self.ghosts and (x, y) != self.player], numTreasures)

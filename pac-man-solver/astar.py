@@ -7,13 +7,13 @@ from maps import Maps
 
 class Astar(object):
 
-    def __init__(self, maps = "small_map.txt", ghostsPosition = set([(5, 3)]), treasuresPosition = [(1, 7), (6, 0)]):
+    def __init__(self, maps = "small_map.txt", ghostsPosition = None, treasuresPosition = None):
 
         if maps == "small_map.txt":
-            self.maps = Maps(maps = maps, ghostsPosition, treasuresPosition)
+            self.maps = Maps(filename = maps, ghostsPosition = ghostsPosition, treasuresPosition = treasuresPosition)
         else:
             self.maps = Maps()
-            
+
         self.treasures = self.maps.treasures
 
 
@@ -49,7 +49,7 @@ class Astar(object):
 
         queue = collections.deque(self.treasures)
         res = []
-        c = 0
+        moves = []
         
         while queue:
 
@@ -75,10 +75,10 @@ class Astar(object):
                     next = path.pop()
                    
                 self.maps.move(next[0], next[1])
-                c += 1
+                moves.append(next)
                 
                 res.append(copy.deepcopy(self.maps.maps))
                 
             queue.popleft()
             
-        return c, res
+        return moves, res

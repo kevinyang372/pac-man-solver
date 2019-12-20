@@ -27,7 +27,7 @@ class QLearning(object):
 
     def train(self):
 
-        for i in range(self.iterations):
+        for _ in range(self.iterations):
 
             state = Maps(filename = self.file, ghostsPosition = set(self.g), treasuresPosition = list(self.t))
 
@@ -57,6 +57,7 @@ class QLearning(object):
 
         done = False
         record = []
+        moves = []
         
         while not done:
             flatten_state = self.maps.returnFlatten()
@@ -71,13 +72,16 @@ class QLearning(object):
                     self.maps.treasures.remove((x + dx, y + dy))
                     self.maps.maps[x + dx][y + dy] = 0    
 
+                moves.append((x + dx, y + dy))
+                if len(moves) > 50: return -1, [] # stuck in loop
+
                 self.maps.move(x + dx, y + dy)
                 self.maps.updateGhost()
                 record.append(copy.deepcopy(self.maps.maps))
                 
                 if not self.maps.treasures: break
             else:
-                break
+                return -1, []
                 
         self.maps = Maps(filename = self.file, ghostsPosition = set(self.g), treasuresPosition = list(self.t))
-        return record
+        return moves, record
