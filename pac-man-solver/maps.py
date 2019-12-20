@@ -8,6 +8,7 @@ class Maps(object):
     def __init__(self, filename="default_map.txt", player=[0, 0], ghostsPosition = None, treasuresPosition = None, numGhosts = 10, numTreasures = 4):
         self.maps = []
 
+        # read map from file
         with open(filename, "r") as file:
             for line in file:
                 self.maps.append(list(map(int, line.replace('\n', '').split(','))))
@@ -32,18 +33,23 @@ class Maps(object):
             self.maps[x][y] = 4
         
         self.maps[self.player[0]][self.player[1]] = 2
+
+        # flatten 2d array to 1d
         self.flatten = lambda x, y: x + y
 
 
+    # check if a position is close to ghost
     def nearGhost(self, x, y):
         return any([self.maps[x + dx][y + dy] == 3 for dx, dy in [[0, 1], [1, 0], [0, -1], [-1, 0], [0, 0]] if 0 <= x + dx < len(self.maps) and 0 <= y + dy < len(self.maps[0])])
 
 
+    # update the ghosts
     def updateGhost(self):
         visited = set()
         for i, j in self.ghosts:
 
             directions = [[0, 1], [1, 0], [0, -1], [-1, 0]]
+            # shuffle the direction to make sure ghosts don't move all in the same direction
             random.shuffle(directions)
 
             for di, dj in directions:
@@ -55,10 +61,12 @@ class Maps(object):
         self.ghosts = visited
 
 
+    # return flattened 2d array
     def returnFlatten(self):
         return tuple(reduce(self.flatten, self.maps))
 
 
+    # return a partially observed 2d array
     def returnPartial(self, d):
         observed = []
     
@@ -81,15 +89,18 @@ class Maps(object):
         return observed
 
 
+    # return a flattened partially observed 2d array
     def returnPartialFlatten(self, d):
         return tuple(reduce(self.flatten, self.returnPartial(d)))
 
 
+    # move the pac-man
     def move(self, x, y):
         self.maps[x][y], self.maps[self.player[0]][self.player[1]] = 2, 0
         self.player = [x, y]
 
 
+    # reward function for q-learning
     def getReward(self, action):
 
         self.updateGhost()
@@ -97,16 +108,20 @@ class Maps(object):
         x, y = self.player
         dx, dy = action
 
+        # go out of bound or hitting a wall
         if x + dx < 0 or x + dx >= len(self.maps) or y + dy < 0 or y + dy >= len(self.maps[0]) or self.maps[x + dx][y + dy] == 1:
             return -10, False
+        # collide with ghost
         elif self.nearGhost(x + dx, y + dy):
             return -100, True
+        # get a treasure
         elif (x + dx, y + dy) in self.treasures:
             self.treasures.remove((x + dx, y + dy))
             done = True if not self.treasures else False
             self.maps[x + dx][y + dy] = 0
             self.move(x + dx, y + dy)
             return 10000, done
+        # move into an empty cell
         else:
             self.move(x + dx, y + dy)
             return -1, False
